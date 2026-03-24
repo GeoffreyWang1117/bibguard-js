@@ -1,0 +1,55 @@
+{
+  "name": "bibguard",
+  "version": "0.2.0",
+  "description": "Detect hallucinated and broken citations in academic papers",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "bibguard": "bin/bibguard.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --test dist/**/*.test.js",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "citation",
+    "verification",
+    "hallucination",
+    "academic",
+    "bibtex",
+    "reference",
+    "latex",
+    "scholarly",
+    "bibguard"
+  ],
+  "author": "Geoffrey Wang <geoffreywang1117@gmail.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GeoffreyWang1117/bibguard-js"
+  },
+  "homepage": "https://geoffreywang1117.github.io/bibguard/",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.4"
+  }
+}
