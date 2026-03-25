@@ -23,7 +23,7 @@ const bibText = readFileSync(bibPath, "utf-8");
 const entries = parseBib(bibText);
 const total = entries.length;
 
-console.log(`\n  bibguard v0.2.0 (TypeScript)`);
+console.log(`\n  bibguard v0.3.0 (TypeScript)`);
 console.log(`  ${bibPath} — ${total} entries\n`);
 
 const t0 = Date.now();

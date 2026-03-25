@@ -14,6 +14,8 @@ function stripAccents(s: string): string {
   return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
+const NON_ARTICLE_TYPES = new Set(["misc", "online", "manual", "techreport", "booklet", "unpublished"]);
+
 function validateApiMatch(entry: BibEntry, data: SourceResult, requireAuthor: boolean): boolean {
   if (!data.authors.length) return true;
   const bibSurname = stripAccents(extractFirstSurname(entry.author));
@@ -52,6 +54,7 @@ export async function verifyEntry(entry: BibEntry): Promise<VerificationResult> 
     key: entry.key, title: entry.title, overall: "OK",
     sourcesTried: [], sourcesHit: [], checks: [], suggestedFixes: {},
   };
+  const isNonArticle = NON_ARTICLE_TYPES.has(entry.type.toLowerCase());
 
   // Source 1: arXiv
   if (entry.arxivId) {
@@ -116,8 +119,13 @@ export async function verifyEntry(entry: BibEntry): Promise<VerificationResult> 
 
   // No match
   if (!result.sourcesHit.length) {
-    result.checks.push({ field: "verification", status: "FAIL", detail: `NO API MATCH (tried: ${result.sourcesTried.join(", ")})`, source: "" });
-    result.overall = "FAIL";
+    if (isNonArticle) {
+      result.checks.push({ field: "verification", status: "WARN", detail: `No API match for @${entry.type} entry -- non-article types have limited API coverage`, source: "" });
+      result.overall = "WARN";
+    } else {
+      result.checks.push({ field: "verification", status: "FAIL", detail: `NO API MATCH (tried: ${result.sourcesTried.join(", ")})`, source: "" });
+      result.overall = "FAIL";
+    }
   }
 
   // Source-aware post-processing
@@ -126,7 +134,16 @@ export async function verifyEntry(entry: BibEntry): Promise<VerificationResult> 
     const srcChecks = result.checks.filter((c) => c.source === src);
     const titleOk = srcChecks.some((c) => c.field === "title" && c.status === "OK");
     const authorOk = srcChecks.some((c) => c.field === "authors" && (c.status === "OK" || c.status === "WARN"));
-    if (titleOk && authorOk) confirmedSources.add(src);
+    if (titleOk && authorOk) {
+      confirmedSources.add(src);
+      // For confirmed matches, accept year off-by-1 as OK
+      for (const c of result.checks) {
+        if (c.source === src && c.field === "year") {
+          if (c.status === "FAIL") { c.status = "WARN"; c.detail += " (downgraded: confirmed match)"; }
+          if (c.status === "WARN" && c.detail.includes("off by 1")) { c.status = "OK"; c.detail += " (accepted: confirmed match)"; }
+        }
+      }
+    }
   }
 
   if (confirmedSources.size > 0) {

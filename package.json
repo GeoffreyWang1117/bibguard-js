@@ -1,6 +1,6 @@
 {
   "name": "bibguard",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Detect hallucinated and broken citations in academic papers",
   "type": "module",
   "main": "dist/index.js",

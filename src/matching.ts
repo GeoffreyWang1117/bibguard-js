@@ -63,8 +63,10 @@ export function matchYear(bibYear: string, apiYear: string | null): MatchResult 
   if (!apiYear) return { status: "WARN", detail: "no year from API" };
   const by = parseInt(bibYear), ay = parseInt(apiYear);
   if (isNaN(by) || isNaN(ay)) return { status: "WARN", detail: `unparseable years: bib=${bibYear} api=${apiYear}` };
-  if (by === ay) return { status: "OK", detail: `year exact match (${by})` };
-  if (Math.abs(by - ay) <= 1) return { status: "WARN", detail: `year off by 1: bib=${by} api=${ay}` };
+  const diff = Math.abs(by - ay);
+  if (diff === 0) return { status: "OK", detail: `year exact match (${by})` };
+  if (diff <= 1) return { status: "WARN", detail: `year off by 1: bib=${by} api=${ay}` };
+  if (diff <= 2) return { status: "WARN", detail: `year off by 2: bib=${by} api=${ay} (preprint vs published?)` };
   return { status: "FAIL", detail: `year mismatch: bib=${by} api=${ay}` };
 }
 
