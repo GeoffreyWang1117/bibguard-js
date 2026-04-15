@@ -16,5 +16,5 @@
 export { parseBib } from "./parsers/bibtex.js";
 export { verifyEntry, verifyAll } from "./core.js";
 export type { ProgressCallback } from "./core.js";
-export type { BibEntry, VerificationResult, Check, SourceResult, ReportSummary } from "./types.js";
+export type { BibEntry, VerificationResult, Check, SourceResult, ReportSummary, InjectionFinding, ScanResult } from "./types.js";
 export { tokenSimilarity, matchTitle, matchAuthors, matchYear, matchVenue } from "./matching.js";

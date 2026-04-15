@@ -55,3 +55,24 @@ export interface ReportSummary {
   fail: number;
   elapsedMs: number;
 }
+
+/** A single injection detection finding. */
+export interface InjectionFinding {
+  severity: "FAIL" | "WARN";
+  category: string;
+  description: string;
+  page: number | null;
+  textSnippet: string;
+  location: string;
+}
+
+/** Result of scanning a PDF for prompt injections. */
+export interface ScanResult {
+  pdfPath: string;
+  verdict: "FAIL" | "WARN" | "CLEAN";
+  failCount: number;
+  warnCount: number;
+  pagesScanned: number;
+  hiddenTextBlocks: number;
+  findings: InjectionFinding[];
+}
